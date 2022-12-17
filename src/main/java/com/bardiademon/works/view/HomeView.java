@@ -220,10 +220,27 @@ public abstract class HomeView extends JFrame
                                 .addContainerGap())
         );
 
+        txtRegistrationTime.setEditable(false);
+        txtClosingTime.setEditable(false);
+        txtMinutes.setEditable(false);
+
         pack();
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
+
+    private void setOnClick()
+    {
+        btnStart.addActionListener(e -> onClickBtnStart());
+        btnNew.addActionListener(e -> onClickBtnNew());
+        btnUpdate.addActionListener(e -> onClickBtnUpdate());
+    }
+
+    protected abstract void onClickBtnUpdate();
+
+    protected abstract void onClickBtnStart();
+
+    protected abstract void onClickBtnNew();
 
 }
