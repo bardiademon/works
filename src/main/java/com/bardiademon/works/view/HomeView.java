@@ -18,6 +18,7 @@ public abstract class HomeView extends JFrame
     protected JTextField txtMinutes;
     protected JTextField txtRegistrationTime;
     protected JTextField txtWorkName;
+    protected JComboBox<String> groups;
 
     protected HomeView() throws HeadlessException
     {
@@ -66,24 +67,26 @@ public abstract class HomeView extends JFrame
         btnStart = new JButton();
         final JLabel lblMinutes = new JLabel();
         txtMinutes = new JTextField();
-
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Works");
-
-        pnlTimeMoney.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0 , 0 , 0)));
-
-        lblTime.setFont(new java.awt.Font("Segoe UI" , Font.PLAIN , 48)); // NOI18N
-        lblTime.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTime.setText("00:00:00");
-
-        lblMoney.setFont(new java.awt.Font("Segoe UI" , Font.PLAIN , 18)); // NOI18N
-        lblMoney.setHorizontalAlignment(SwingConstants.CENTER);
-        lblMoney.setText("$ 0");
-
-        GroupLayout pnlTimeMoneyLayout = new GroupLayout(pnlTimeMoney);
+        javax.swing.GroupLayout pnlTimeMoneyLayout = new javax.swing.GroupLayout(pnlTimeMoney);
         pnlTimeMoney.setLayout(pnlTimeMoneyLayout);
-        pnlTimeMoneyLayout.setHorizontalGroup(pnlTimeMoneyLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(pnlTimeMoneyLayout.createSequentialGroup().addContainerGap().addGroup(pnlTimeMoneyLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(lblTime , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE).addComponent(lblMoney , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)).addContainerGap()));
-        pnlTimeMoneyLayout.setVerticalGroup(pnlTimeMoneyLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(pnlTimeMoneyLayout.createSequentialGroup().addContainerGap().addComponent(lblTime , GroupLayout.PREFERRED_SIZE , 98 , GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(lblMoney).addContainerGap(GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)));
+        pnlTimeMoneyLayout.setHorizontalGroup(
+                pnlTimeMoneyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlTimeMoneyLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(pnlTimeMoneyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lblTime , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)
+                                        .addComponent(lblMoney , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE))
+                                .addContainerGap())
+        );
+        pnlTimeMoneyLayout.setVerticalGroup(
+                pnlTimeMoneyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlTimeMoneyLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblTime , javax.swing.GroupLayout.PREFERRED_SIZE , 98 , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblMoney)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE))
+        );
 
         jScrollPane2.setViewportView(lstWorks);
 
@@ -109,10 +112,113 @@ public abstract class HomeView extends JFrame
 
         lblMinutes.setText("Minutes");
 
-        GroupLayout layout = new GroupLayout(getContentPane());
+        groups = new JComboBox<>();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Works");
+
+        pnlTimeMoney.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0 , 0 , 0)));
+
+        lblTime.setFont(new java.awt.Font("Segoe UI" , Font.PLAIN , 48)); // NOI18N
+        lblTime.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTime.setText("00:00:00");
+
+        lblMoney.setFont(new java.awt.Font("Segoe UI" , Font.PLAIN , 18)); // NOI18N
+        lblMoney.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblMoney.setText("$ 0");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING , layout.createSequentialGroup().addContainerGap().addComponent(jScrollPane2 , GroupLayout.PREFERRED_SIZE , 237 , GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pnlTimeMoney , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE).addGroup(layout.createSequentialGroup().addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(lblRegistrationTime).addComponent(lblMinutes).addGroup(layout.createSequentialGroup().addGap(6 , 6 , 6).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(txtRegistrationTime , GroupLayout.PREFERRED_SIZE , 236 , GroupLayout.PREFERRED_SIZE).addComponent(txtMinutes , GroupLayout.PREFERRED_SIZE , 236 , GroupLayout.PREFERRED_SIZE)))).addGroup(layout.createSequentialGroup().addGap(6 , 6 , 6).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(lblWorkName).addGroup(layout.createSequentialGroup().addGap(6 , 6 , 6).addComponent(txtWorkName , GroupLayout.PREFERRED_SIZE , 236 , GroupLayout.PREFERRED_SIZE))))).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED , 68 , Short.MAX_VALUE).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING , layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(lblHourlyAmount).addGroup(layout.createSequentialGroup().addGap(6 , 6 , 6).addComponent(txtHourlyAmount , GroupLayout.PREFERRED_SIZE , 236 , GroupLayout.PREFERRED_SIZE))).addGroup(GroupLayout.Alignment.TRAILING , layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(lblClosingTime).addGroup(layout.createSequentialGroup().addGap(6 , 6 , 6).addComponent(txtClosingTime , GroupLayout.PREFERRED_SIZE , 236 , GroupLayout.PREFERRED_SIZE)).addGroup(GroupLayout.Alignment.TRAILING , layout.createSequentialGroup().addGap(191 , 191 , 191).addComponent(chkClose))))).addComponent(btnStart , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE).addComponent(btnNew , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE).addComponent(btnUpdate , GroupLayout.DEFAULT_SIZE , GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)).addContainerGap()));
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addComponent(pnlTimeMoney , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(lblWorkName).addComponent(lblHourlyAmount)).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(txtWorkName , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE).addComponent(txtHourlyAmount , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE)).addGap(18 , 18 , 18).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addComponent(lblRegistrationTime).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(txtRegistrationTime , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE)).addGroup(layout.createSequentialGroup().addComponent(lblClosingTime).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(txtClosingTime , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE))).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(chkClose).addComponent(lblMinutes)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(txtMinutes , GroupLayout.PREFERRED_SIZE , GroupLayout.DEFAULT_SIZE , GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED , 20 , Short.MAX_VALUE).addComponent(btnUpdate).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(btnStart , GroupLayout.PREFERRED_SIZE , 57 , GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(btnNew)).addComponent(jScrollPane2)).addContainerGap()));
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING , layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING , false)
+                                        .addComponent(jScrollPane2 , javax.swing.GroupLayout.DEFAULT_SIZE , 237 , Short.MAX_VALUE)
+                                        .addComponent(groups , 0 , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(pnlTimeMoney , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addComponent(lblRegistrationTime)
+                                                                .addComponent(lblMinutes)
+                                                                .addGroup(layout.createSequentialGroup()
+                                                                        .addGap(6 , 6 , 6)
+                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                .addComponent(txtRegistrationTime , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addComponent(txtMinutes , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGap(6 , 6 , 6)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(lblWorkName)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGap(6 , 6 , 6)
+                                                                                .addComponent(txtWorkName , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED , 68 , Short.MAX_VALUE)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING , layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addComponent(lblHourlyAmount)
+                                                                .addGroup(layout.createSequentialGroup()
+                                                                        .addGap(6 , 6 , 6)
+                                                                        .addComponent(txtHourlyAmount , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING , layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addComponent(lblClosingTime)
+                                                                .addGroup(layout.createSequentialGroup()
+                                                                        .addGap(6 , 6 , 6)
+                                                                        .addComponent(txtClosingTime , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING , layout.createSequentialGroup()
+                                                                        .addGap(191 , 191 , 191)
+                                                                        .addComponent(chkClose)))))
+                                        .addComponent(btnStart , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)
+                                        .addComponent(btnNew , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)
+                                        .addComponent(btnUpdate , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE))
+                                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING , layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(groups , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED , javax.swing.GroupLayout.DEFAULT_SIZE , Short.MAX_VALUE)
+                                                .addComponent(jScrollPane2 , javax.swing.GroupLayout.PREFERRED_SIZE , 437 , javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(pnlTimeMoney , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(lblWorkName)
+                                                        .addComponent(lblHourlyAmount))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(txtWorkName , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtHourlyAmount , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(18 , 18 , 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(lblRegistrationTime)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(txtRegistrationTime , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(lblClosingTime)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(txtClosingTime , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(chkClose)
+                                                        .addComponent(lblMinutes))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtMinutes , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(btnUpdate , javax.swing.GroupLayout.PREFERRED_SIZE , 29 , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnStart , javax.swing.GroupLayout.PREFERRED_SIZE , 57 , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnNew , javax.swing.GroupLayout.PREFERRED_SIZE , 29 , javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
+        );
 
         pack();
 
