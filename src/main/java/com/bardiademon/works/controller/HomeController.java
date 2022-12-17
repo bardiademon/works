@@ -3,6 +3,7 @@ package com.bardiademon.works.controller;
 import com.bardiademon.works.data.model.Works;
 import com.bardiademon.works.utils.Path;
 import com.bardiademon.works.view.HomeView;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -14,13 +15,12 @@ import java.nio.file.Files;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 public class HomeController extends HomeView
 {
-    private final Map<String, Works> works = new HashMap<>();
+    private final Map<String, List<Works>> works = new HashMap<>();
 
     private final DefaultListModel<String> listModel = new DefaultListModel<>();
     private final DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
@@ -29,6 +29,54 @@ public class HomeController extends HomeView
     {
         super();
         loadWorks();
+    }
+
+    @Override
+    protected void onClickGroups()
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            final String selectedItem = (String) super.groups.getSelectedItem();
+            if (selectedItem != null && !selectedItem.isEmpty())
+            {
+                final List<Works> works = this.works.get(selectedItem);
+                setList(works);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onClickLstWork()
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            final int selectedIndex = lstWorks.getSelectedIndex();
+            if (selectedIndex >= 0)
+            {
+                final String selectedItem = (String) super.groups.getSelectedItem();
+                if (selectedItem != null && !selectedItem.isEmpty())
+                {
+                    final List<Works> works = this.works.get(selectedItem);
+                    final Works work = works.get(selectedIndex);
+                    setWork(work);
+                }
+            }
+        });
+    }
+
+    private void setWork(final Works work)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            txtWorkName.setText(work.getName());
+            txtHourlyAmount.setText(String.valueOf(work.getHourlyAmount()));
+            txtClosingTime.setText(work.getClosingTime().toString());
+            txtRegistrationTime.setText(work.getRegisterationTime().toString());
+            txtWorked.setText(work.getWorked().toString());
+            chkClose.setSelected(work.isClose());
+            lblTime.setText(work.getWorked().toString());
+        });
     }
 
     private void loadWorks()
@@ -62,30 +110,41 @@ public class HomeController extends HomeView
                     final Set<String> keys = jsonWorks.keySet();
                     for (final String key : keys)
                     {
-                        final JSONObject item = jsonWorks.getJSONObject(key);
+                        final JSONArray jsonArrayItem = jsonWorks.getJSONArray(key);
 
-                        final String name = item.getString("name");
-                        final int hourlyAmount = item.getInt("hourly_amount");
-                        final long registerationTimeLong = item.getLong("registeration_time");
-                        final long closingTimeLong = item.getLong("closing_time");
-                        final LocalDateTime registerationTime = (new Timestamp(registerationTimeLong)).toLocalDateTime();
-                        final LocalDateTime closingTime = (new Timestamp(closingTimeLong)).toLocalDateTime();
-                        final long worked = item.getLong("worked");
-                        final boolean close = item.getBoolean("close");
+                        if (jsonArrayItem.length() > 0)
+                        {
+                            final List<Works> works = new ArrayList<>();
+                            for (final Object jsonObj : jsonArrayItem)
+                            {
+                                final JSONObject item = (JSONObject) jsonObj;
 
-                        final Works works = Works.builder()
-                                .name(name)
-                                .hourlyAmount(hourlyAmount)
-                                .registerationTime(registerationTime)
-                                .closingTime(closingTime)
-                                .worked(new Time(worked))
-                                .close(close)
-                                .build();
+                                final String name = item.getString("name");
+                                final int hourlyAmount = item.getInt("hourly_amount");
+                                final long registerationTimeLong = item.getLong("registeration_time");
+                                final long closingTimeLong = item.getLong("closing_time");
+                                final LocalDateTime registerationTime = (new Timestamp(registerationTimeLong)).toLocalDateTime();
+                                final LocalDateTime closingTime = (new Timestamp(closingTimeLong)).toLocalDateTime();
+                                final long worked = item.getLong("worked");
+                                final boolean close = item.getBoolean("close");
 
-                        this.works.put(key , works);
+                                final Works work = Works.builder()
+                                        .name(name)
+                                        .hourlyAmount(hourlyAmount)
+                                        .registerationTime(registerationTime)
+                                        .closingTime(closingTime)
+                                        .worked(new Time(worked))
+                                        .close(close)
+                                        .build();
+
+                                works.add(work);
+                            }
+
+                            this.works.put(key , works);
+                        }
                     }
                 }
-                setList();
+                setGroups();
             }
             catch (IOException e)
             {
@@ -95,7 +154,7 @@ public class HomeController extends HomeView
         }).start();
     }
 
-    private void setList()
+    private void setGroups()
     {
         SwingUtilities.invokeLater(() ->
         {
@@ -107,13 +166,19 @@ public class HomeController extends HomeView
 
             if (works.size() > 0)
             {
-                works.forEach((groupName , works) ->
-                {
-                    comboBoxModel.addElement(groupName);
-                    listModel.addElement(works.toString());
-                });
+                works.forEach((groupName , works) -> comboBoxModel.addElement(groupName));
             }
         });
+    }
+
+    private void setList(final List<Works> works)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            listModel.clear();
+            for (final Works work : works) listModel.addElement(work.toString());
+        });
+
     }
 
     @Override

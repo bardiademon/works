@@ -3,6 +3,8 @@ package com.bardiademon.works.view;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public abstract class HomeView extends JFrame
 {
@@ -15,7 +17,7 @@ public abstract class HomeView extends JFrame
     protected JList<String> lstWorks;
     protected JTextField txtClosingTime;
     protected JTextField txtHourlyAmount;
-    protected JTextField txtMinutes;
+    protected JTextField txtWorked;
     protected JTextField txtRegistrationTime;
     protected JTextField txtWorkName;
     protected JComboBox<String> groups;
@@ -65,8 +67,8 @@ public abstract class HomeView extends JFrame
         btnNew = new JButton();
         btnUpdate = new JButton();
         btnStart = new JButton();
-        final JLabel lblMinutes = new JLabel();
-        txtMinutes = new JTextField();
+        final JLabel lblWorked = new JLabel();
+        txtWorked = new JTextField();
         javax.swing.GroupLayout pnlTimeMoneyLayout = new javax.swing.GroupLayout(pnlTimeMoney);
         pnlTimeMoney.setLayout(pnlTimeMoneyLayout);
         pnlTimeMoneyLayout.setHorizontalGroup(
@@ -110,7 +112,7 @@ public abstract class HomeView extends JFrame
         btnStart.setText("Start of work");
         btnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        lblMinutes.setText("Minutes");
+        lblWorked.setText("Worked");
 
         groups = new JComboBox<>();
 
@@ -143,12 +145,12 @@ public abstract class HomeView extends JFrame
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                 .addComponent(lblRegistrationTime)
-                                                                .addComponent(lblMinutes)
+                                                                .addComponent(lblWorked)
                                                                 .addGroup(layout.createSequentialGroup()
                                                                         .addGap(6 , 6 , 6)
                                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                                 .addComponent(txtRegistrationTime , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addComponent(txtMinutes , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                                                .addComponent(txtWorked , javax.swing.GroupLayout.PREFERRED_SIZE , 236 , javax.swing.GroupLayout.PREFERRED_SIZE))))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGap(6 , 6 , 6)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,9 +210,9 @@ public abstract class HomeView extends JFrame
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                         .addComponent(chkClose)
-                                                        .addComponent(lblMinutes))
+                                                        .addComponent(lblWorked))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtMinutes , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(txtWorked , javax.swing.GroupLayout.PREFERRED_SIZE , javax.swing.GroupLayout.DEFAULT_SIZE , javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(btnUpdate , javax.swing.GroupLayout.PREFERRED_SIZE , 29 , javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -222,12 +224,14 @@ public abstract class HomeView extends JFrame
 
         txtRegistrationTime.setEditable(false);
         txtClosingTime.setEditable(false);
-        txtMinutes.setEditable(false);
+        txtWorked.setEditable(false);
 
         pack();
+        setOnClick();
 
         setLocationRelativeTo(null);
         setVisible(true);
+
     }
 
     private void setOnClick()
@@ -235,7 +239,28 @@ public abstract class HomeView extends JFrame
         btnStart.addActionListener(e -> onClickBtnStart());
         btnNew.addActionListener(e -> onClickBtnNew());
         btnUpdate.addActionListener(e -> onClickBtnUpdate());
+        lstWorks.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                HomeView.this.onClickLstWork();
+            }
+        });
+
+        groups.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                HomeView.this.onClickGroups();
+            }
+        });
     }
+
+    protected abstract void onClickGroups();
+
+    protected abstract void onClickLstWork();
 
     protected abstract void onClickBtnUpdate();
 

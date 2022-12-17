@@ -1,10 +1,12 @@
 {
-  "name": {
-    "name": "service",
-    "hourly_amount": 65000,
-    "registeration_time": 1671314639403,
-    "closing_time": 0,
-    "worked": 2260000,
-    "close": false
-  }
+  "name": [
+    {
+      "name": "service",
+      "hourly_amount": 65000,
+      "registeration_time": 1671314639403,
+      "closing_time": 0,
+      "worked": 2260000,
+      "close": false
+    }
+  ]
 }
