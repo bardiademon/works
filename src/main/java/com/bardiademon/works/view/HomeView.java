@@ -3,11 +3,15 @@ package com.bardiademon.works.view;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public abstract class HomeView extends JFrame
 {
+    protected final String txtStartBtnStart = "Start of work", txtStopBtnStart = "Stop of work";
+
     protected JButton btnNew;
     protected JButton btnStart;
     protected JButton btnUpdate;
@@ -96,7 +100,7 @@ public abstract class HomeView extends JFrame
 
         lblHourlyAmount.setText("Hourly Amount");
 
-        lblRegistrationTime.setText(" Registration time");
+        lblRegistrationTime.setText("Registration time");
 
         lblClosingTime.setText("Closing time");
 
@@ -109,7 +113,7 @@ public abstract class HomeView extends JFrame
         btnUpdate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         btnStart.setFont(new java.awt.Font("Segoe UI" , Font.PLAIN , 24)); // NOI18N
-        btnStart.setText("Start of work");
+        btnStart.setText(txtStartBtnStart);
         btnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         lblWorked.setText("Worked");
@@ -256,7 +260,11 @@ public abstract class HomeView extends JFrame
                 HomeView.this.onClickGroups();
             }
         });
+
+        chkClose.addActionListener(e -> onClickChkClose());
     }
+
+    protected abstract void onClickChkClose();
 
     protected abstract void onClickGroups();
 

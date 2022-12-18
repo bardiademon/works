@@ -15,11 +15,25 @@ import java.nio.file.Files;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.List;
+import java.util.Timer;
 
 public class HomeController extends HomeView
 {
+    private Timer timer;
+
+    private boolean onCheckClose = false;
+
+    private boolean update = false;
+
+    private Works selectedWork;
+    private String selectedGroupName;
+    private int selectedWorkIndex;
+
+    private boolean startOfWork;
+
     private final Map<String, List<Works>> works = new HashMap<>();
 
     private final DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -29,6 +43,23 @@ public class HomeController extends HomeView
     {
         super();
         loadWorks();
+        update();
+    }
+
+    @Override
+    protected void onClickChkClose()
+    {
+        if (checkSelectedWork())
+        {
+            if (!selectedWork.isClose() && startOfWork) onClickBtnStart();
+
+            selectedWork.setClose(chkClose.isSelected());
+
+            if (selectedWork.isClose())
+                selectedWork.setClosingTime(LocalDateTime.now());
+
+            updateCurrentWork();
+        }
     }
 
     @Override
@@ -39,6 +70,7 @@ public class HomeController extends HomeView
             final String selectedItem = (String) super.groups.getSelectedItem();
             if (selectedItem != null && !selectedItem.isEmpty())
             {
+                selectedGroupName = selectedItem;
                 final List<Works> works = this.works.get(selectedItem);
                 setList(works);
             }
@@ -57,6 +89,7 @@ public class HomeController extends HomeView
                 final String selectedItem = (String) super.groups.getSelectedItem();
                 if (selectedItem != null && !selectedItem.isEmpty())
                 {
+                    selectedWorkIndex = selectedIndex;
                     final List<Works> works = this.works.get(selectedItem);
                     final Works work = works.get(selectedIndex);
                     setWork(work);
@@ -76,7 +109,10 @@ public class HomeController extends HomeView
             txtWorked.setText(work.getWorked().toString());
             chkClose.setSelected(work.isClose());
             lblTime.setText(work.getWorked().toString());
+
+            if (timer != null) timer.cancel();
         });
+        this.selectedWork = work;
     }
 
     private void loadWorks()
@@ -119,23 +155,16 @@ public class HomeController extends HomeView
                             {
                                 final JSONObject item = (JSONObject) jsonObj;
 
-                                final String name = item.getString("name");
-                                final int hourlyAmount = item.getInt("hourly_amount");
-                                final long registerationTimeLong = item.getLong("registeration_time");
-                                final long closingTimeLong = item.getLong("closing_time");
+                                final String name = item.getString(Works.JsonKey.NAME);
+                                final int hourlyAmount = item.getInt(Works.JsonKey.HOURLY_AMOUNT);
+                                final long registerationTimeLong = item.getLong(Works.JsonKey.REGISTERATION_TIME);
+                                final long closingTimeLong = item.getLong(Works.JsonKey.CLOSING_TIME);
                                 final LocalDateTime registerationTime = (new Timestamp(registerationTimeLong)).toLocalDateTime();
                                 final LocalDateTime closingTime = (new Timestamp(closingTimeLong)).toLocalDateTime();
-                                final long worked = item.getLong("worked");
-                                final boolean close = item.getBoolean("close");
+                                final long worked = item.getLong(Works.JsonKey.WORKED);
+                                final boolean close = item.getBoolean(Works.JsonKey.CLOSE);
 
-                                final Works work = Works.builder()
-                                        .name(name)
-                                        .hourlyAmount(hourlyAmount)
-                                        .registerationTime(registerationTime)
-                                        .closingTime(closingTime)
-                                        .worked(new Time(worked))
-                                        .close(close)
-                                        .build();
+                                final Works work = Works.builder().name(name).hourlyAmount(hourlyAmount).registerationTime(registerationTime).closingTime(closingTime).worked(new Time(worked)).close(close).build();
 
                                 works.add(work);
                             }
@@ -190,12 +219,164 @@ public class HomeController extends HomeView
     @Override
     protected void onClickBtnStart()
     {
+        if (checkSelectedWork())
+        {
+            if (selectedWork.isClose())
+            {
+                showMessage("Error" , "This work is closed" , JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
+            if (startOfWork)
+            {
+                SwingUtilities.invokeLater(() -> btnStart.setText(txtStartBtnStart));
+                startOfWork = false;
+                if (timer != null) timer.cancel();
+
+                final String timeText = lblTime.getText();
+
+                selectedWork.setWorked(Time.valueOf(timeText));
+
+                updateCurrentWork();
+            }
+            else
+            {
+                SwingUtilities.invokeLater(() -> btnStart.setText(txtStopBtnStart));
+                startOfWork = true;
+                final Time worked = selectedWork.getWorked();
+                setTimer(worked);
+            }
+        }
+    }
+
+    private boolean checkSelectedWork()
+    {
+        if (selectedWork != null) return true;
+        else
+        {
+            showMessage("Error" , "Not selected work" , JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private void showMessage(final String title , final String message , final int type)
+    {
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null , message , title , type));
     }
 
     @Override
     protected void onClickBtnNew()
     {
 
+    }
+
+    private void setTimer(final Time worked)
+    {
+        final LocalTime localTime = worked.toLocalTime();
+
+        final int[] hour = {localTime.getHour()};
+        final int[] min = {localTime.getMinute()};
+        final int[] sec = {localTime.getSecond()};
+
+        if (timer != null) timer.cancel();
+
+        timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                sec[0]++;
+                if (sec[0] >= 60)
+                {
+                    sec[0] = 0;
+
+                    min[0]++;
+                    update = true;
+
+                    if (min[0] >= 60)
+                    {
+                        min[0] = 0;
+
+                        hour[0]++;
+                    }
+                }
+
+                updateTime(hour[0] , min[0] , sec[0]);
+            }
+        } , 1000 , 1000);
+    }
+
+    private void updateTime(final int hour , final int min , final int sec)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            final Time time = Time.valueOf(String.format("%d:%d:%d" , hour , min , sec));
+            lblTime.setText(time.toString());
+        });
+    }
+
+    private void updateCurrentWork()
+    {
+        if (selectedWork != null && selectedGroupName != null && selectedWorkIndex >= 0)
+        {
+            final List<Works> works = this.works.get(selectedGroupName);
+            works.set(selectedWorkIndex , selectedWork);
+            this.works.put(selectedGroupName , works);
+
+            setWork(selectedWork);
+
+            update = true;
+        }
+    }
+
+    private void update()
+    {
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                if (update)
+                {
+                    update = false;
+
+                    final HomeController _this = HomeController.this;
+                    if (_this.works.size() > 0)
+                    {
+                        final JSONObject worksJson = new JSONObject();
+                        for (final Map.Entry<String, List<Works>> entry : _this.works.entrySet())
+                        {
+                            String key = entry.getKey();
+                            List<Works> itemsList = entry.getValue();
+                            final JSONArray items = new JSONArray();
+                            for (final Works work : itemsList)
+                            {
+                                final JSONObject item = new JSONObject();
+                                item.put(Works.JsonKey.NAME , work.getName());
+                                item.put(Works.JsonKey.WORKED , work.getWorked().getTime());
+                                item.put(Works.JsonKey.HOURLY_AMOUNT , work.getHourlyAmount());
+                                item.put(Works.JsonKey.REGISTERATION_TIME , Timestamp.valueOf(work.getRegisterationTime()).getTime());
+                                item.put(Works.JsonKey.CLOSING_TIME , Timestamp.valueOf(work.getClosingTime()).getTime());
+                                item.put(Works.JsonKey.CLOSE , work.isClose());
+
+                                items.put(item);
+                            }
+                            worksJson.put(key , items);
+                        }
+
+                        try
+                        {
+                            Files.write(new File(Path.WORKS_JSON).toPath() , worksJson.toString().getBytes(StandardCharsets.UTF_8));
+                        }
+                        catch (IOException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        } , 1 , 1000);
     }
 }

@@ -1,12 +1,12 @@
 {
   "name": [
     {
-      "name": "service",
+      "worked": 252000,
       "hourly_amount": 65000,
+      "closing_time": 1671377769106,
+      "name": "service",
       "registeration_time": 1671314639403,
-      "closing_time": 0,
-      "worked": 2260000,
-      "close": false
+      "close": true
     }
   ]
 }
