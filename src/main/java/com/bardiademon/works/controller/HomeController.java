@@ -24,8 +24,6 @@ public class HomeController extends HomeView
 {
     private Timer timer;
 
-    private boolean onCheckClose = false;
-
     private boolean update = false;
 
     private Works selectedWork;
@@ -164,7 +162,14 @@ public class HomeController extends HomeView
                                 final long worked = item.getLong(Works.JsonKey.WORKED);
                                 final boolean close = item.getBoolean(Works.JsonKey.CLOSE);
 
-                                final Works work = Works.builder().name(name).hourlyAmount(hourlyAmount).registerationTime(registerationTime).closingTime(closingTime).worked(new Time(worked)).close(close).build();
+                                final Works work = Works.builder()
+                                        .name(name)
+                                        .hourlyAmount(hourlyAmount)
+                                        .registerationTime(registerationTime)
+                                        .closingTime(closingTime)
+                                        .worked(new Time(worked))
+                                        .close(close)
+                                        .build();
 
                                 works.add(work);
                             }
@@ -213,7 +218,59 @@ public class HomeController extends HomeView
     @Override
     protected void onClickBtnUpdate()
     {
+        if (checkSelectedWork())
+        {
+            final String name = txtWorkName.getText();
+            final String hourlyAmountStr = txtHourlyAmount.getText();
 
+            if (notEmpty(name) && notEmpty(hourlyAmountStr))
+            {
+                int hourlyAmount;
+                try
+                {
+                    hourlyAmount = Integer.parseInt(hourlyAmountStr);
+                }
+                catch (Exception e)
+                {
+                    showMessage("Error" , "Please enter a number Hourly Amount" , JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (hasName(name))
+                {
+                    showMessage("Error" , "The name {" + name + "} is repeated" , JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    selectedWork.setName(name);
+                    selectedWork.setHourlyAmount(hourlyAmount);
+
+                    showMessage("Success" , "Updated" , JOptionPane.INFORMATION_MESSAGE);
+
+                    updateCurrentWork();
+                }
+            }
+            else showMessage("Error" , "Empty name or Hourly Amount" , JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean hasName(final String name)
+    {
+        if (notEmpty(name))
+        {
+            for (final Map.Entry<String, List<Works>> entry : this.works.entrySet())
+            {
+                final List<Works> works = entry.getValue();
+                for (final Works work : works) if (work.getName().equals(name)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean notEmpty(final String value)
+    {
+        return value != null && !value.isEmpty();
     }
 
     @Override
