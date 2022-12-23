@@ -1,1 +1,38 @@
-{"name":[{"worked":313000,"hourly_amount":65000,"closing_time":1671396701604,"name":"service","registeration_time":1671314639403,"close":false}]}
+{
+  "reciepts": [
+    {
+      "worked": 111960000,
+      "hourly_amount": 65000,
+      "closing_time": 1671459030141,
+      "name": "fetch_reciepts",
+      "registeration_time": 1671314639403,
+      "close": true
+    },
+    {
+      "worked": 23063000,
+      "hourly_amount": 65000,
+      "closing_time": 0,
+      "name": "fetch_reciepts_2",
+      "registeration_time": 1671537524324,
+      "close": false
+    },
+    {
+      "worked": 12323000,
+      "hourly_amount": 65000,
+      "closing_time": 0,
+      "name": "remove_reciepts",
+      "registeration_time": 1671314639403,
+      "close": false
+    }
+  ],
+  "partner": [
+    {
+      "worked": -10124000,
+      "hourly_amount": 65000,
+      "closing_time": -1484020949016,
+      "name": "partner_info_2services",
+      "registeration_time": 1671738794984,
+      "close": false
+    }
+  ]
+}

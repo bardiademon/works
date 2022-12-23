@@ -3,6 +3,7 @@ package com.bardiademon.works.controller;
 import com.bardiademon.works.data.model.Works;
 import com.bardiademon.works.utils.Path;
 import com.bardiademon.works.view.HomeView;
+import com.sun.istack.internal.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -53,8 +55,7 @@ public class HomeController extends HomeView
 
             selectedWork.setClose(chkClose.isSelected());
 
-            if (selectedWork.isClose())
-                selectedWork.setClosingTime(LocalDateTime.now());
+            if (selectedWork.isClose()) selectedWork.setClosingTime(LocalDateTime.now());
 
             updateCurrentWork();
         }
@@ -100,13 +101,29 @@ public class HomeController extends HomeView
     {
         SwingUtilities.invokeLater(() ->
         {
-            txtWorkName.setText(work.getName());
-            txtHourlyAmount.setText(String.valueOf(work.getHourlyAmount()));
-            txtClosingTime.setText(work.getClosingTime().toString());
-            txtRegistrationTime.setText(work.getRegisterationTime().toString());
-            txtWorked.setText(work.getWorked().toString());
-            chkClose.setSelected(work.isClose());
-            lblTime.setText(work.getWorked().toString());
+            if (work != null)
+            {
+                txtWorkName.setText(work.getName());
+                txtHourlyAmount.setText(String.valueOf(work.getHourlyAmount()));
+                txtClosingTime.setText(work.getClosingTime().toString());
+                txtRegistrationTime.setText(work.getRegisterationTime().toString());
+                txtWorked.setText(work.getWorked().toString());
+                chkClose.setSelected(work.isClose());
+                lblTime.setText(work.getWorked().toString());
+                setMoney();
+            }
+            else
+            {
+                txtWorkName.setText("");
+                txtHourlyAmount.setText("");
+                txtClosingTime.setText("");
+                txtRegistrationTime.setText("");
+                txtWorked.setText("");
+                chkClose.setSelected(false);
+                lblTime.setText("");
+                lblMoney.setText("");
+            }
+
 
             if (timer != null) timer.cancel();
         });
@@ -162,14 +179,7 @@ public class HomeController extends HomeView
                                 final long worked = item.getLong(Works.JsonKey.WORKED);
                                 final boolean close = item.getBoolean(Works.JsonKey.CLOSE);
 
-                                final Works work = Works.builder()
-                                        .name(name)
-                                        .hourlyAmount(hourlyAmount)
-                                        .registerationTime(registerationTime)
-                                        .closingTime(closingTime)
-                                        .worked(new Time(worked))
-                                        .close(close)
-                                        .build();
+                                final Works work = Works.builder().name(name).hourlyAmount(hourlyAmount).registerationTime(registerationTime).closingTime(closingTime).worked(new Time(worked)).close(close).build();
 
                                 works.add(work);
                             }
@@ -324,7 +334,81 @@ public class HomeController extends HomeView
     @Override
     protected void onClickBtnNew()
     {
+        SwingUtilities.invokeLater(() ->
+        {
+            final String groupname = getValue("Group name" , "Please enter group name");
 
+            if (notEmpty(groupname))
+            {
+                boolean existsGroupname = false;
+                for (int i = 0, len = comboBoxModel.getSize(); i < len; i++)
+                {
+                    if (groupname.equals(comboBoxModel.getElementAt(i)))
+                    {
+                        final int selected = JOptionPane.showConfirmDialog(null , "This group name is exists! Want to add to this group?" , groupname + "is exists" , JOptionPane.YES_NO_CANCEL_OPTION , JOptionPane.QUESTION_MESSAGE , null);
+
+                        switch (selected)
+                        {
+                            case 0: // Yes
+                                existsGroupname = true;
+                                break;
+                            case 1: // No
+                            case 2: // Cancel
+                                return;
+                        }
+                    }
+                }
+
+
+                String name;
+                while (true)
+                {
+                    name = getValue("Name" , "Please enter name");
+                    if (notEmpty(name)) break;
+                    else showMessage("Error name" , "The name cannot be empty" , JOptionPane.ERROR_MESSAGE);
+                }
+
+                int hourlyAmount;
+                while (true)
+                {
+                    final String hourlyAmountStr = getValue("Hourly amount" , "Please enter hourly amount.");
+                    if (notEmpty(hourlyAmountStr))
+                    {
+                        if (hourlyAmountStr.matches("[0-9]*"))
+                        {
+                            hourlyAmount = Integer.parseInt(hourlyAmountStr);
+                            break;
+                        }
+                        else
+                            showMessage("Error hourly amount" , "Please enter only numbers" , JOptionPane.ERROR_MESSAGE);
+                    }
+                    else
+                        showMessage("Error hourly amount" , "The hourly amount cannot be empty" , JOptionPane.ERROR_MESSAGE);
+                }
+
+                final int addingNewItemOptionSelected = JOptionPane.showConfirmDialog(null , String.format("Do you want to add this {Name: %s, Hourly amount: %d}?" , name , hourlyAmount) , "Adding new item" , JOptionPane.YES_NO_OPTION , JOptionPane.QUESTION_MESSAGE , null);
+
+                if (addingNewItemOptionSelected == 0 /* 0 = yes */)
+                {
+                    final Works work = Works.builder().name(name).hourlyAmount(hourlyAmount).registerationTime(LocalDateTime.now()).close(false).build();
+
+                    final List<Works> works = existsGroupname ? this.works.get(groupname) : new ArrayList<>();
+
+                    works.add(work);
+                    this.works.put(groupname , works);
+
+                    showMessage("Added" , "A new item was added in group " + groupname , JOptionPane.INFORMATION_MESSAGE);
+
+                    clear();
+                    doUpdate(this::loadWorks);
+                }
+            }
+        });
+    }
+
+    private String getValue(final String title , final String message)
+    {
+        return (String) JOptionPane.showInputDialog(null , message , title , JOptionPane.INFORMATION_MESSAGE , null , null , null);
     }
 
     private void setTimer(final Time worked)
@@ -349,7 +433,7 @@ public class HomeController extends HomeView
                     sec[0] = 0;
 
                     min[0]++;
-                    update = true;
+                    doUpdate(null);
 
                     if (min[0] >= 60)
                     {
@@ -370,6 +454,8 @@ public class HomeController extends HomeView
         {
             final Time time = Time.valueOf(String.format("%d:%d:%d" , hour , min , sec));
             lblTime.setText(time.toString());
+            selectedWork.setWorked(time);
+            setMoney();
         });
     }
 
@@ -382,9 +468,18 @@ public class HomeController extends HomeView
             this.works.put(selectedGroupName , works);
 
             setWork(selectedWork);
-
-            update = true;
+            doUpdate(null);
         }
+    }
+
+    private void clear()
+    {
+        if (startOfWork) onClickBtnStart();
+        selectedWork = null;
+        selectedWorkIndex = -1;
+        selectedGroupName = null;
+        update = false;
+        setWork(null);
     }
 
     private void update()
@@ -395,45 +490,113 @@ public class HomeController extends HomeView
             @Override
             public void run()
             {
-                if (update)
+                doUpdate(null);
+            }
+        } , 1 , 60000);
+    }
+
+    private void doUpdate(final DoUpdate doUpdate)
+    {
+        new Thread(() ->
+        {
+            while (update)
+            {
+                try
                 {
-                    update = false;
-
-                    final HomeController _this = HomeController.this;
-                    if (_this.works.size() > 0)
-                    {
-                        final JSONObject worksJson = new JSONObject();
-                        for (final Map.Entry<String, List<Works>> entry : _this.works.entrySet())
-                        {
-                            String key = entry.getKey();
-                            List<Works> itemsList = entry.getValue();
-                            final JSONArray items = new JSONArray();
-                            for (final Works work : itemsList)
-                            {
-                                final JSONObject item = new JSONObject();
-                                item.put(Works.JsonKey.NAME , work.getName());
-                                item.put(Works.JsonKey.WORKED , work.getWorked().getTime());
-                                item.put(Works.JsonKey.HOURLY_AMOUNT , work.getHourlyAmount());
-                                item.put(Works.JsonKey.REGISTERATION_TIME , Timestamp.valueOf(work.getRegisterationTime()).getTime());
-                                item.put(Works.JsonKey.CLOSING_TIME , Timestamp.valueOf(work.getClosingTime()).getTime());
-                                item.put(Works.JsonKey.CLOSE , work.isClose());
-
-                                items.put(item);
-                            }
-                            worksJson.put(key , items);
-                        }
-
-                        try
-                        {
-                            Files.write(new File(Path.WORKS_JSON).toPath() , worksJson.toString().getBytes(StandardCharsets.UTF_8));
-                        }
-                        catch (IOException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e)
+                {
+                    throw new RuntimeException(e);
                 }
             }
-        } , 1 , 1000);
+            System.gc();
+
+            if (this.works.size() > 0)
+            {
+                final JSONObject worksJson = new JSONObject();
+                for (final Map.Entry<String, List<Works>> entry : this.works.entrySet())
+                {
+                    final String key = entry.getKey();
+                    final List<Works> itemsList = entry.getValue();
+
+                    final JSONArray items = new JSONArray();
+                    for (final Works work : itemsList)
+                    {
+                        final JSONObject item = new JSONObject();
+                        item.put(Works.JsonKey.NAME , work.getName());
+                        item.put(Works.JsonKey.WORKED , work.getWorked().getTime());
+                        item.put(Works.JsonKey.HOURLY_AMOUNT , work.getHourlyAmount());
+                        item.put(Works.JsonKey.REGISTERATION_TIME , Timestamp.valueOf(work.getRegisterationTime()).getTime());
+                        item.put(Works.JsonKey.CLOSING_TIME , Timestamp.valueOf(work.getClosingTime()).getTime());
+                        item.put(Works.JsonKey.CLOSE , work.isClose());
+
+                        items.put(item);
+                    }
+                    worksJson.put(key , items);
+                }
+
+                try
+                {
+                    Files.write(new File(Path.WORKS_JSON).toPath() , worksJson.toString().getBytes(StandardCharsets.UTF_8));
+                    if (doUpdate != null) doUpdate.updated();
+                }
+                catch (IOException e)
+                {
+                    update = false;
+                    System.gc();
+                    throw new RuntimeException(e);
+                }
+
+            }
+            System.gc();
+            update = false;
+        }).start();
     }
+
+    private interface DoUpdate
+    {
+        void updated();
+    }
+
+    private void setMoney()
+    {
+        if (checkSelectedWork())
+        {
+            final float money = calculateMoney(selectedWork.getWorked() , selectedWork.getHourlyAmount());
+            SwingUtilities.invokeLater(() -> lblMoney.setText(moneyToString(money)));
+        }
+        else SwingUtilities.invokeLater(() -> lblMoney.setText("0"));
+    }
+
+    public float calculateMoney(final Time worked , final int hourlyAmount)
+    {
+        if (hourlyAmount > 0)
+        {
+            final LocalTime localTime = worked.toLocalTime();
+
+            final int hour = localTime.getHour();
+            final int minute = localTime.getMinute();
+            final int second = localTime.getSecond();
+
+            float money = 0;
+
+            final double minMoney = (hourlyAmount / 60F);
+            final double secMoney = (minMoney / 60F);
+
+            if (hour > 0) money += hourlyAmount * hour;
+            if (minute > 0) money += minMoney * minute;
+            if (second > 0) money += secMoney * second;
+
+            return money;
+        }
+
+        return 0;
+    }
+
+    private String moneyToString(float money)
+    {
+        return NumberFormat.getCurrencyInstance(new Locale("ir" , "IR")).format(money);
+    }
+
 }

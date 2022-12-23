@@ -22,7 +22,8 @@ public final class Works
     private LocalDateTime registerationTime;
 
     @SerializedName("closing_time")
-    private LocalDateTime closingTime;
+    @Builder.Default
+    private LocalDateTime closingTime = LocalDateTime.now().minusYears(100);
 
     @SerializedName("sec")
     @Builder.Default
