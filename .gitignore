@@ -1,4 +1,6 @@
 /.idea
 /target
 /out
+/data
+/data/works.json
 tmp.txt
