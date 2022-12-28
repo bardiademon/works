@@ -1,1 +1,12 @@
-{"test":[{"worked":-12540000,"hourly_amount":120000,"closing_time":-1483507051497,"name":"Work 1","registeration_time":1672252692503,"close":false}]}
+{
+  "test": [
+    {
+      "worked": -12540000,
+      "hourly_amount": 120000,
+      "closing_time": -1483507051497,
+      "name": "Work 1",
+      "registeration_time": 1672252692503,
+      "close": false
+    }
+  ]
+}
