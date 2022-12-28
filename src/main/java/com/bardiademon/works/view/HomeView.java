@@ -1,13 +1,19 @@
 package com.bardiademon.works.view;
 
+import com.bardiademon.works.data.enums.ThemeType;
+
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.border.LineBorder;
+import javax.swing.border.StrokeBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public abstract class HomeView extends JFrame
 {
+    public static ThemeType themeType;
+
     protected final String txtStartBtnStart = "Start of work", txtStopBtnStart = "Stop of work";
 
     protected JButton btnNew;
@@ -23,11 +29,21 @@ public abstract class HomeView extends JFrame
     protected JTextField txtRegistrationTime;
     protected JTextField txtWorkName;
     protected JComboBox<String> groups;
+    protected JPanel pnlTimeMoney;
+    protected JLabel lblWorkName;
+    protected JLabel lblHourlyAmount;
+    protected JLabel lblRegistrationTime;
+    protected JLabel lblClosingTime;
+    protected JLabel lblWorked;
 
     protected HomeView() throws HeadlessException
     {
         setLookAndFeel();
-        EventQueue.invokeLater(this::initComponents);
+        EventQueue.invokeLater(() ->
+        {
+            initComponents();
+            setTheme();
+        });
     }
 
     private void setLookAndFeel()
@@ -36,7 +52,7 @@ public abstract class HomeView extends JFrame
         {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
             {
-                if ("Windows".equals(info.getName()))
+                if ("Nimbus".equals(info.getName()))
                 {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -44,7 +60,7 @@ public abstract class HomeView extends JFrame
             }
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-               UnsupportedLookAndFeelException e)
+                UnsupportedLookAndFeelException e)
         {
             e.printStackTrace();
         }
@@ -52,24 +68,24 @@ public abstract class HomeView extends JFrame
 
     private void initComponents()
     {
-        final JPanel pnlTimeMoney = new JPanel();
+        pnlTimeMoney = new JPanel();
         lblTime = new JLabel();
         lblMoney = new JLabel();
         final JScrollPane jScrollPane2 = new JScrollPane();
         lstWorks = new JList<>();
-        final JLabel lblWorkName = new JLabel();
+        lblWorkName = new JLabel();
         txtWorkName = new JTextField();
-        final JLabel lblHourlyAmount = new JLabel();
+        lblHourlyAmount = new JLabel();
         txtHourlyAmount = new JTextField();
         txtRegistrationTime = new JTextField();
-        final JLabel lblRegistrationTime = new JLabel();
+        lblRegistrationTime = new JLabel();
         txtClosingTime = new JTextField();
-        final JLabel lblClosingTime = new JLabel();
+        lblClosingTime = new JLabel();
         chkClose = new JCheckBox();
         btnNew = new JButton();
         btnUpdate = new JButton();
         btnStart = new JButton();
-        final JLabel lblWorked = new JLabel();
+        lblWorked = new JLabel();
         txtWorked = new JTextField();
         javax.swing.GroupLayout pnlTimeMoneyLayout = new javax.swing.GroupLayout(pnlTimeMoney);
         pnlTimeMoney.setLayout(pnlTimeMoneyLayout);
@@ -250,14 +266,7 @@ public abstract class HomeView extends JFrame
             }
         });
 
-        groups.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                HomeView.this.onClickGroups();
-            }
-        });
+        groups.addPropertyChangeListener(evt -> HomeView.this.onClickGroups());
 
         chkClose.addActionListener(e -> onClickChkClose());
     }
@@ -274,4 +283,72 @@ public abstract class HomeView extends JFrame
 
     protected abstract void onClickBtnNew();
 
+    private void setTheme()
+    {
+        disableBtnAnimation();
+
+        if (themeType == ThemeType.DARK)
+        {
+            final Color background = Color.decode("#121212");
+            final Color foreground = Color.decode("#FFFFFF");
+
+            setTheme(background , foreground , background);
+        }
+        if (themeType == ThemeType.LIGHT)
+        {
+            final Color background = new Color(245 , 245 , 245);
+            final Color foreground = Color.decode("#000000");
+
+            setTheme(background , foreground , Color.white);
+        }
+    }
+
+    private void setTheme(final Color background , final Color foreground , final Color backgroundTxtColor)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            setColor(background , null , HomeView.this , getContentPane());
+            setColor(background , foreground , btnStart , btnNew , btnUpdate);
+            btnStart.setBorder(new StrokeBorder(new BasicStroke(0.2F)));
+            btnNew.setBorder(new StrokeBorder(new BasicStroke(0.2F)));
+            btnUpdate.setBorder(new StrokeBorder(new BasicStroke(0.2F)));
+
+            setColor(background , foreground , lstWorks , groups);
+            lstWorks.setSelectionForeground(foreground);
+            lstWorks.setSelectionBackground(background.darker());
+
+            setColor(background , null , pnlTimeMoney);
+
+            setColor(null , foreground ,
+                    lblTime , lblTime , lblMoney , lblClosingTime , lblWorked , lblRegistrationTime , lblWorkName , lblHourlyAmount , chkClose);
+
+            pnlTimeMoney.setBorder(new LineBorder(foreground));
+
+            setColor(backgroundTxtColor , foreground , txtClosingTime , txtRegistrationTime , txtWorked , txtWorkName , txtHourlyAmount);
+
+            pack();
+        });
+    }
+
+    private void setColor(final Color background , final Color foreground , final Component... components)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            for (final Component component : components)
+            {
+                if (background != null) component.setBackground(background);
+                if (foreground != null) component.setForeground(foreground);
+            }
+        });
+    }
+
+    private void disableBtnAnimation()
+    {
+        btnStart.setContentAreaFilled(false);
+        btnStart.setFocusPainted(false);
+        btnNew.setContentAreaFilled(false);
+        btnNew.setFocusPainted(false);
+        btnUpdate.setContentAreaFilled(false);
+        btnUpdate.setFocusPainted(false);
+    }
 }
