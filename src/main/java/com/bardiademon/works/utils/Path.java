@@ -7,7 +7,7 @@ public final class Path
     public static final String
             ROOT = System.getProperty("user.dir"),
             DATA = ROOT + File.separator + "data",
-            WORKS_JSON = DATA + File.separator + "works.json";
+            WORKS_JSON = DATA + File.separator + "my_works.json";
 
 
     private Path()
