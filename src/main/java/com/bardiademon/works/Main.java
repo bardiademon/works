@@ -4,14 +4,11 @@ import com.bardiademon.works.controller.HomeController;
 import com.bardiademon.works.data.enums.ThemeType;
 import com.bardiademon.works.view.HomeView;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Locale;
 
-public class Main
+public final class Main
 {
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         System.out.println("bardiademon");
 

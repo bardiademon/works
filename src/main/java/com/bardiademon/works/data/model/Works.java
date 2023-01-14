@@ -1,11 +1,11 @@
 package com.bardiademon.works.data.model;
 
+import com.bardiademon.works.utils.Time;
 import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 
 @Builder
@@ -27,7 +27,7 @@ public final class Works
 
     @SerializedName("sec")
     @Builder.Default
-    private Time worked = new Time(-12600000);
+    private Time worked = Time.of("00:00:00");
 
     private boolean close;
 
@@ -37,7 +37,7 @@ public final class Works
         public static final String
                 NAME = "name",
                 HOURLY_AMOUNT = "hourly_amount",
-                REGISTERATION_TIME = "registeration_time",
+                REGISTRATION_TIME = "registration_time",
                 CLOSING_TIME = "closing_time",
                 WORKED = "worked",
                 CLOSE = "close";

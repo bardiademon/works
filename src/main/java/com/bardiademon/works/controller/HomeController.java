@@ -2,6 +2,7 @@ package com.bardiademon.works.controller;
 
 import com.bardiademon.works.data.model.Works;
 import com.bardiademon.works.utils.Path;
+import com.bardiademon.works.utils.Time;
 import com.bardiademon.works.view.HomeView;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,11 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
@@ -37,6 +36,8 @@ public class HomeController extends HomeView
 
     private final DefaultListModel<String> listModel = new DefaultListModel<>();
     private final DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+
+    private boolean generalCalculation = false;
 
     public HomeController() throws HeadlessException
     {
@@ -82,14 +83,24 @@ public class HomeController extends HomeView
         SwingUtilities.invokeLater(() ->
         {
             final int selectedIndex = lstWorks.getSelectedIndex();
-            if (selectedIndex >= 0)
+
+            if (selectedIndex == 0)
+            {
+                generalCalculation = true;
+                generalCalculation();
+                return;
+            }
+
+            generalCalculation = false;
+
+            if (selectedIndex > 0)
             {
                 final String selectedItem = (String) super.groups.getSelectedItem();
                 if (selectedItem != null && !selectedItem.isEmpty())
                 {
-                    selectedWorkIndex = selectedIndex;
+                    selectedWorkIndex = selectedIndex - 1;
                     final List<Works> works = this.works.get(selectedItem);
-                    final Works work = works.get(selectedIndex);
+                    final Works work = works.get(selectedWorkIndex);
                     setWork(work);
                 }
             }
@@ -164,21 +175,30 @@ public class HomeController extends HomeView
 
                         if (jsonArrayItem.length() > 0)
                         {
+                            listModel.clear();
+
                             final List<Works> works = new ArrayList<>();
+
                             for (final Object jsonObj : jsonArrayItem)
                             {
                                 final JSONObject item = (JSONObject) jsonObj;
 
                                 final String name = item.getString(Works.JsonKey.NAME);
                                 final int hourlyAmount = item.getInt(Works.JsonKey.HOURLY_AMOUNT);
-                                final long registerationTimeLong = item.getLong(Works.JsonKey.REGISTERATION_TIME);
+                                final long registrationTimeLong = item.getLong(Works.JsonKey.REGISTRATION_TIME);
                                 final long closingTimeLong = item.getLong(Works.JsonKey.CLOSING_TIME);
-                                final LocalDateTime registerationTime = (new Timestamp(registerationTimeLong)).toLocalDateTime();
+                                final LocalDateTime registrationTime = (new Timestamp(registrationTimeLong)).toLocalDateTime();
                                 final LocalDateTime closingTime = (new Timestamp(closingTimeLong)).toLocalDateTime();
                                 final long worked = item.getLong(Works.JsonKey.WORKED);
                                 final boolean close = item.getBoolean(Works.JsonKey.CLOSE);
 
-                                final Works work = Works.builder().name(name).hourlyAmount(hourlyAmount).registerationTime(registerationTime).closingTime(closingTime).worked(new Time(worked)).close(close).build();
+                                final Works work = Works.builder()
+                                        .name(name)
+                                        .hourlyAmount(hourlyAmount)
+                                        .registerationTime(registrationTime)
+                                        .closingTime(closingTime)
+                                        .worked(Time.of(worked))
+                                        .close(close).build();
 
                                 works.add(work);
                             }
@@ -219,6 +239,7 @@ public class HomeController extends HomeView
         SwingUtilities.invokeLater(() ->
         {
             listModel.clear();
+            listModel.addElement("General calculation");
             for (final Works work : works) listModel.addElement(work.toString());
         });
 
@@ -227,6 +248,8 @@ public class HomeController extends HomeView
     @Override
     protected void onClickBtnUpdate()
     {
+        if (generalCalculation) return;
+
         if (checkSelectedWork())
         {
             final String name = txtWorkName.getText();
@@ -285,6 +308,8 @@ public class HomeController extends HomeView
     @Override
     protected void onClickBtnStart()
     {
+        if (generalCalculation) return;
+
         if (checkSelectedWork())
         {
             if (selectedWork.isClose())
@@ -301,7 +326,7 @@ public class HomeController extends HomeView
 
                 final String timeText = lblTime.getText();
 
-                selectedWork.setWorked(Time.valueOf(timeText));
+                selectedWork.setWorked(Time.of(timeText));
 
                 updateCurrentWork();
             }
@@ -412,12 +437,6 @@ public class HomeController extends HomeView
 
     private void setTimer(final Time worked)
     {
-        final LocalTime localTime = worked.toLocalTime();
-
-        final int[] hour = {localTime.getHour()};
-        final int[] min = {localTime.getMinute()};
-        final int[] sec = {localTime.getSecond()};
-
         if (timer != null) timer.cancel();
 
         timer = new Timer();
@@ -426,34 +445,18 @@ public class HomeController extends HomeView
             @Override
             public void run()
             {
-                sec[0]++;
-                if (sec[0] >= 60)
-                {
-                    sec[0] = 0;
-
-                    min[0]++;
-                    doUpdate(null);
-
-                    if (min[0] >= 60)
-                    {
-                        min[0] = 0;
-
-                        hour[0]++;
-                    }
-                }
-
-                updateTime(hour[0] , min[0] , sec[0]);
+                worked.plus();
+                updateTime(worked);
             }
         } , 1000 , 1000);
     }
 
-    private void updateTime(final int hour , final int min , final int sec)
+    private void updateTime(final Time worked)
     {
         SwingUtilities.invokeLater(() ->
         {
-            final Time time = Time.valueOf(String.format("%d:%d:%d" , hour , min , sec));
-            lblTime.setText(time.toString());
-            selectedWork.setWorked(time);
+            lblTime.setText(worked.toString());
+            selectedWork.setWorked(worked);
             setMoney();
         });
     }
@@ -513,6 +516,7 @@ public class HomeController extends HomeView
 
             if (this.works.size() > 0)
             {
+                update = true;
                 final JSONObject worksJson = new JSONObject();
                 for (final Map.Entry<String, List<Works>> entry : this.works.entrySet())
                 {
@@ -524,9 +528,9 @@ public class HomeController extends HomeView
                     {
                         final JSONObject item = new JSONObject();
                         item.put(Works.JsonKey.NAME , work.getName());
-                        item.put(Works.JsonKey.WORKED , work.getWorked().getTime());
+                        item.put(Works.JsonKey.WORKED , work.getWorked().toLong());
                         item.put(Works.JsonKey.HOURLY_AMOUNT , work.getHourlyAmount());
-                        item.put(Works.JsonKey.REGISTERATION_TIME , Timestamp.valueOf(work.getRegisterationTime()).getTime());
+                        item.put(Works.JsonKey.REGISTRATION_TIME , Timestamp.valueOf(work.getRegisterationTime()).getTime());
                         item.put(Works.JsonKey.CLOSING_TIME , Timestamp.valueOf(work.getClosingTime()).getTime());
                         item.put(Works.JsonKey.CLOSE , work.isClose());
 
@@ -572,11 +576,9 @@ public class HomeController extends HomeView
     {
         if (hourlyAmount > 0)
         {
-            final LocalTime localTime = worked.toLocalTime();
-
-            final int hour = localTime.getHour();
-            final int minute = localTime.getMinute();
-            final int second = localTime.getSecond();
+            final int hour = worked.getHour();
+            final short minute = worked.getMinute();
+            final short second = worked.getSecond();
 
             float money = 0;
 
@@ -596,6 +598,43 @@ public class HomeController extends HomeView
     private String moneyToString(float money)
     {
         return NumberFormat.getCurrencyInstance(new Locale("ir" , "IR")).format(money);
+    }
+
+    private void generalCalculation()
+    {
+        if (works != null && works.size() > 0)
+        {
+            if (selectedGroupName != null && !selectedGroupName.isEmpty() && works.containsKey(selectedGroupName))
+            {
+                final List<Works> works = this.works.get(selectedGroupName);
+
+                int totalMoney = 0;
+                Time time = null;
+                for (final Works work : works)
+                {
+                    final Time worked = work.getWorked();
+                    time = worked.plus(time);
+                    totalMoney += calculateMoney(worked , work.getHourlyAmount());
+                }
+
+                final int finalTotalMoney = totalMoney;
+                final String timeToString = time != null ? time.toString() : "00:00:00";
+                SwingUtilities.invokeLater(() ->
+                {
+                    txtWorkName.setText("");
+                    txtClosingTime.setText("");
+                    txtRegistrationTime.setText("");
+                    txtHourlyAmount.setText("");
+                    txtWorked.setText(timeToString);
+                    lblTime.setText(timeToString);
+                    lblMoney.setText(moneyToString(finalTotalMoney));
+                });
+
+            }
+            else
+                showMessage("General calculation" , "Not found works with groupname: " + selectedGroupName , JOptionPane.ERROR_MESSAGE);
+        }
+        else showMessage("General calculation" , "Works is empty" , JOptionPane.ERROR_MESSAGE);
     }
 
 }

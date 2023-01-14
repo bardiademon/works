@@ -267,6 +267,7 @@ public abstract class HomeView extends JFrame
         });
 
         groups.addPropertyChangeListener(evt -> HomeView.this.onClickGroups());
+        groups.addActionListener(evt -> HomeView.this.onClickGroups());
 
         chkClose.addActionListener(e -> onClickChkClose());
     }
