@@ -572,7 +572,7 @@ public class HomeController extends HomeView
         else SwingUtilities.invokeLater(() -> lblMoney.setText("0"));
     }
 
-    public float calculateMoney(final Time worked , final int hourlyAmount)
+    public static float calculateMoney(final Time worked , final int hourlyAmount)
     {
         if (hourlyAmount > 0)
         {
@@ -595,7 +595,7 @@ public class HomeController extends HomeView
         return 0;
     }
 
-    private String moneyToString(float money)
+    public static String moneyToString(float money)
     {
         return NumberFormat.getCurrencyInstance(new Locale("ir" , "IR")).format(money);
     }
