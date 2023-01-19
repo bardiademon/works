@@ -1,54 +1,54 @@
 Name: fetch_reciepts
 Time: 11:36:34
-Result:  870,708.31
+Result:  754,613.88
 ---------------
 Name: fetch_reciepts_2
 Time: 10:54:31
-Result:  818,145.81
+Result:  709,059.75
 ---------------
 Name: remove_reciepts
 Time: 07:56:37
-Result:  595,770.81
+Result:  516,334.72
 ---------------
 Name: partner_info_2services
 Time: 05:20:39
-Result:  400,812.50
+Result:  347,370.81
 ---------------
 Name: SearchService
 Time: 03:54:51
-Result:  293,562.50
+Result:  254,420.83
 ---------------
 Name: SearchProduct
 Time: 03:47:39
-Result:  284,562.50
+Result:  246,620.84
 ---------------
 Name: SearchIRCProduct
 Time: 02:04:33
-Result:  155,687.50
+Result:  134,929.16
 ---------------
 Name: fetch_reciepts_3
 Time: 08:31:36
-Result:  639,500.00
+Result:  554,233.31
 ---------------
 Name: Delete prescription
 Time: 06:03:48
-Result:  454,750.00
+Result:  394,116.66
 ---------------
 Name: Fetch Prescription History REMOVED
 Time: 07:01:46
-Result:  527,208.31
+Result:  456,913.91
 ---------------
 Name: Fetch Prescription History RENAMED
 Time: 12:21:58
-Result:  927,458.31
+Result:  803,797.25
 ---------------
 Name: fetchDeliverableServices
 Time: 02:13:45
-Result:  167,187.50
+Result:  144,895.83
 ---------------
 Name: Fetch Prescription
 Time: 11:01:03
-Result:  826,312.50
+Result:  716,137.50
 ---------------
 
 -------
@@ -56,5 +56,5 @@ TOTAL
 -------
 Name: TOTAL
 Time: 92:49:20
-Result:  6,961,667.00
+Result:  6,033,444.50
 ---------------
