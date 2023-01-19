@@ -360,7 +360,7 @@ public class HomeController extends HomeView
     {
         SwingUtilities.invokeLater(() ->
         {
-            final String groupname = getValue("Group name" , "Please enter group name");
+            final String groupname = getValue("Group name" , "Please enter group name" , selectedGroupName);
 
             if (notEmpty(groupname))
             {
@@ -387,7 +387,7 @@ public class HomeController extends HomeView
                 String name;
                 while (true)
                 {
-                    name = getValue("Name" , "Please enter name");
+                    name = getValue("Name" , "Please enter name" , null);
                     if (notEmpty(name)) break;
                     else showMessage("Error name" , "The name cannot be empty" , JOptionPane.ERROR_MESSAGE);
                 }
@@ -395,7 +395,7 @@ public class HomeController extends HomeView
                 int hourlyAmount;
                 while (true)
                 {
-                    final String hourlyAmountStr = getValue("Hourly amount" , "Please enter hourly amount.");
+                    final String hourlyAmountStr = getValue("Hourly amount" , "Please enter hourly amount." , null);
                     if (notEmpty(hourlyAmountStr))
                     {
                         if (hourlyAmountStr.matches("[0-9]*"))
@@ -430,9 +430,10 @@ public class HomeController extends HomeView
         });
     }
 
-    private String getValue(final String title , final String message)
+    private String getValue(final String title , final String message , final String selectedValue)
     {
-        return (String) JOptionPane.showInputDialog(null , message , title , JOptionPane.INFORMATION_MESSAGE , null , null , null);
+        return (String) JOptionPane
+                .showInputDialog(null , message , title , JOptionPane.INFORMATION_MESSAGE , null , null , selectedValue);
     }
 
     private void setTimer(final Time worked)
