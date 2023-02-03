@@ -2,6 +2,6 @@
 /target
 /out
 /data
-/data/works.json
-/data/my_works.json
+/data/tmp/works.json
+/data/tmp/my_works.json
 tmp.txt

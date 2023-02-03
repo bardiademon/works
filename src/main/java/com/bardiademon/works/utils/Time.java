@@ -222,42 +222,53 @@ public final class Time
 
     public Time plusHour(final int hour)
     {
-        if (hour <= 0) throw new RuntimeException("Invalid hour");
+        if (hour < 0) throw new RuntimeException("Invalid hour");
+        else if (hour == 0) return this;
+
         final int sec = (hour * 60) * 60;
         return plusSecond(sec);
     }
 
     public Time plusMinute(final int minute)
     {
-        if (minute <= 0) throw new RuntimeException("Invalid minute");
+        if (minute < 0) throw new RuntimeException("Invalid minute");
+        else if (minute == 0) return this;
+
         final int sec = (minute * 60);
         return plusSecond(sec);
     }
 
     public Time plusSecond(final int second)
     {
-        if (second <= 0) throw new RuntimeException("Invalid second");
+        if (second < 0) throw new RuntimeException("Invalid second");
+        else if (second == 0) return this;
+
         for (int i = 0; i < second; i++) plus();
         return this;
     }
 
     public Time minusHour(final int hour)
     {
-        if (hour <= 0) throw new RuntimeException("Invalid hour");
+        if (hour < 0) throw new RuntimeException("Invalid hour");
+        else if (hour == 0) return this;
+
         final int sec = (hour * 60) * 60;
         return minusSecond(sec);
     }
 
     public Time minusMinute(final int minute)
     {
-        if (minute <= 0) throw new RuntimeException("Invalid minute");
+        if (minute < 0) throw new RuntimeException("Invalid minute");
+        else if (minute == 0) return this;
+
         final int sec = (minute * 60);
         return minusSecond(sec);
     }
 
     public Time minusSecond(final int second)
     {
-        if (second <= 0) throw new RuntimeException("Invalid second");
+        if (second < 0) throw new RuntimeException("Invalid second");
+        else if (second == 0) return this;
         for (int i = 0; i < second; i++) minus();
 
         return this;
